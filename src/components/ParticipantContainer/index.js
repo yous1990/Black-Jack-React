@@ -1,7 +1,8 @@
 import React from "react";
 import Avatar from "@material-ui/core/Avatar";
 import Typography from "@material-ui/core/Typography";
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles, withStyles } from "@material-ui/core/styles";
+import Badge from '@material-ui/core/Badge';
 
 const useStyles = makeStyles(theme => ({
   dealerCard: {
@@ -21,17 +22,63 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
+const StyledBadge = withStyles(theme => ({
+  badge: {
+    backgroundColor: '#44b700',
+    color: '#44b700',
+    boxShadow: `0 0 0 2px ${theme.palette.background.paper}`,
+    '&::after': {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      width: '100%',
+      height: '100%',
+      borderRadius: '50%',
+      animation: '$ripple 1.2s infinite ease-in-out',
+      border: '1px solid currentColor',
+      content: '""',
+    },
+  },
+  '@keyframes ripple': {
+    '0%': {
+      transform: 'scale(.8)',
+      opacity: 1,
+    },
+    '100%': {
+      transform: 'scale(2.4)',
+      opacity: 0,
+    },
+  },
+}))(Badge);
+
 const ParticipantPanel = props => {
-  const {participantPanelTitle, ...other} = props;
+  const {participantPanelTitle, turn, ...other} = props;
 
   const classes = useStyles();
 
   return (
     <div className={classes.dealerCard}>
-      <Avatar
-        {...other}
-        className={classes.avatar}
-      />
+      {
+        turn
+        ? <StyledBadge
+            overlap="circle"
+            anchorOrigin={{
+              vertical: 'bottom',
+              horizontal: 'right',
+            }}
+            variant="dot"
+          >
+            <Avatar
+              {...other}
+              className={classes.avatar}
+            />
+          </StyledBadge>
+        
+        : <Avatar
+            {...other}
+            className={classes.avatar}
+          />
+      }
       <Typography 
         variant="h6"
         gutterBottom

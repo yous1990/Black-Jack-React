@@ -50,7 +50,6 @@ function App() {
 
   const classes = useStyles();
 
-  console.log("loading??", state.loading);
   return (
     <div className={classes.app}>
       <div className={classes.dealerCard}>
@@ -81,7 +80,7 @@ function App() {
                 type: "UPDATE_PLAYER1_TURN",
                 payload: false
               });
-              getNewCard("bank");
+              getNewCard("dealer");
               setChecked(true);
             }}
           >

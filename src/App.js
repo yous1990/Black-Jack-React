@@ -1,15 +1,12 @@
-import React, { useEffect } from "react";
+import React from "react";
 import useDataApi from "./customHook";
 import initialState from "./store/initialState";
 import "./App.css";
-import Avatar from "@material-ui/core/Avatar";
-import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
-import Button from "@material-ui/core/Button";
 import CardContainer from "./components/CardContainer";
 import ParticipantPanel from "./components/ParticipantContainer/index";
 import CustomButton from "./components/common/CustomButton";
-import Alert from "./components/common/Alert"
+import Alert from "./components/common/Alert";
 
 const useStyles = makeStyles(theme => ({
   dealerCard: {
@@ -39,10 +36,10 @@ const useStyles = makeStyles(theme => ({
     border: "1px solid white",
     width: "90%",
     height: "160px",
-    alignItems: 'center',
-    display: 'flex',
-    justifyContent: 'space-between',
-    overflowX: 'auto'
+    alignItems: "center",
+    display: "flex",
+    justifyContent: "space-between",
+    overflowX: "auto"
   }
 }));
 
@@ -53,34 +50,20 @@ function App() {
 
   const [open, setOpen] = React.useState(false);
 
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-
   const handleClose = () => {
     setOpen(false);
   };
 
   const classes = useStyles();
 
-  console.log("loading??", state.loading);
   return (
     <div className={classes.app}>
       <ParticipantPanel
         alt="dealer"
         src="https://c8.alamy.com/comp/K035CA/live-dealer-single-flat-icon-on-white-background-vector-illustration-K035CA.jpg"
         participantPanelTitle={`Score Dealer: ${state.dealerTotal}`}
+        turn={!state.player1Turn}
       />
-      <button onClick={() => {
-        if(state.dealerTotal > 17) {
-          handleClickOpen()
-        }
-        /* getNewDeck()
-        dispatch({
-          type: 'REINIT_ALL',
-          payload: initialState
-        }) */
-      }}>replay</button>
       <div>
         {!state.player1Turn && (
           <CustomButton
@@ -90,7 +73,7 @@ function App() {
                 type: "UPDATE_PLAYER1_TURN",
                 payload: false
               });
-              getNewCard("bank");
+              getNewCard("dealer");
               setChecked(true);
             }}
             buttonTitle={"Dealer prend une carte"}
@@ -109,6 +92,7 @@ function App() {
         alt="dealer"
         src="https://image.shutterstock.com/image-vector/casino-player-icon-600w-518699749.jpg"
         participantPanelTitle={`Score Joueur 1: ${state.player1Total}`}
+        turn={state.player1Turn}
       />
       <div className={classes.dealerCardsContainer}>
         <CardContainer
@@ -122,33 +106,38 @@ function App() {
         <CustomButton
           disabled={!state.player1Turn || state.player1Total > 21}
           onClick={() => {
-            getNewCard('player'); setChecked(true)
+            getNewCard("player");
+            setChecked(true);
           }}
           buttonTitle={"Joueur 1 prend une carte"}
         />
-        {
-          state.player1Turn &&
+        {state.player1Turn && (
           <CustomButton
             onClick={() => {
               dispatch({
-                type: 'UPDATE_PLAYER1_TURN',
+                type: "UPDATE_PLAYER1_TURN",
                 payload: false
               });
             }}
             buttonTitle={"Je passe"}
           />
-        }
+        )}
       </div>
       <Alert
-        open={open}
-        win={state.player1Total === 21 || state.player1Total > state.dealerCards}
-        replay= {() => {
-          getNewDeck()
+        open={state.dealerTotal >= 17 || state.player1Total >= 21}
+        win={
+          (state.player1Total <= 21 &&
+            state.player1Total > state.dealerTotal) ||
+          state.dealerTotal > 21
+        }
+        state={state}
+        replay={() => {
+          getNewDeck();
           dispatch({
-            type: 'REINIT_ALL',
+            type: "REINIT_ALL",
             payload: initialState
-          })
-          handleClose()
+          });
+          handleClose();
         }}
       />
     </div>
