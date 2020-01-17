@@ -7,9 +7,6 @@ import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import CardContainer from "./components/CardContainer";
-import ParticipantPanel from "./components/ParticipantContainer/index";
-import CustomButton from "./components/common/CustomButton";
-import Alert from "./components/common/Alert"
 
 const useStyles = makeStyles(theme => ({
   dealerCard: {
@@ -51,40 +48,34 @@ function App() {
 
   const [checked, setChecked] = React.useState(false);
 
-  const [open, setOpen] = React.useState(false);
-
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-  };
-
   const classes = useStyles();
 
   console.log("loading??", state.loading);
   return (
     <div className={classes.app}>
-      <ParticipantPanel
-        alt="dealer"
-        src="https://c8.alamy.com/comp/K035CA/live-dealer-single-flat-icon-on-white-background-vector-illustration-K035CA.jpg"
-        participantPanelTitle={`Score Dealer: ${state.dealerTotal}`}
-      />
+      <div className={classes.dealerCard}>
+        <Avatar
+          className={classes.avatar}
+          alt="dealer"
+          src="https://c8.alamy.com/comp/K035CA/live-dealer-single-flat-icon-on-white-background-vector-illustration-K035CA.jpg"
+        />
+        <Typography variant="h6" gutterBottom className={classes.score}>
+          Dealer Score: {state.dealerTotal}
+        </Typography>
+      </div>
       <button onClick={() => {
-        if(state.dealerTotal > 17) {
-          handleClickOpen()
-        }
-        /* getNewDeck()
+        getNewDeck()
         dispatch({
           type: 'REINIT_ALL',
           payload: initialState
-        }) */
+        })
       }}>replay</button>
       <div>
         {!state.player1Turn && (
-          <CustomButton
-            disabled={state.dealerTotal > 17}
+          <Button
+            size="medium"
+            variant="contained"
+            className={classes.dealerButton}
             onClick={() => {
               dispatch({
                 type: "UPDATE_PLAYER1_TURN",
@@ -93,8 +84,9 @@ function App() {
               getNewCard("bank");
               setChecked(true);
             }}
-            buttonTitle={"Dealer prend une carte"}
-          />
+          >
+            Dealer prend une carte
+          </Button>
         )}
       </div>
       <div className={classes.dealerCardsContainer}>
@@ -105,11 +97,16 @@ function App() {
           loading={state.loading}
         />
       </div>
-      <ParticipantPanel
-        alt="dealer"
-        src="https://image.shutterstock.com/image-vector/casino-player-icon-600w-518699749.jpg"
-        participantPanelTitle={`Score Joueur 1: ${state.player1Total}`}
-      />
+      <div className={classes.dealerCard}>
+        <Avatar
+          className={classes.avatar}
+          alt="dealer"
+          src="https://image.shutterstock.com/image-vector/casino-player-icon-600w-518699749.jpg"
+        />
+        <Typography variant="h6" gutterBottom className={classes.score}>
+          Player 1 Score: {state.player1Total}
+        </Typography>
+      </div>
       <div className={classes.dealerCardsContainer}>
         <CardContainer
           className="player"
@@ -119,38 +116,35 @@ function App() {
         />
       </div>
       <div>
-        <CustomButton
-          disabled={!state.player1Turn || state.player1Total > 21}
+        <Button
+          disabled={!state.player1Turn}
+          size="medium"
+          variant="contained"
+          className={classes.dealerButton}
           onClick={() => {
             getNewCard('player'); setChecked(true)
           }}
-          buttonTitle={"Joueur 1 prend une carte"}
-        />
+        >
+          Player 1 prend une carte
+        </Button>
         {
-          state.player1Turn &&
-          <CustomButton
+          state.player1Turn && 
+          <Button
+            disabled={!state.player1Turn}
+            size="medium"
+            variant="contained"
+            className={classes.dealerButton}
             onClick={() => {
               dispatch({
                 type: 'UPDATE_PLAYER1_TURN',
                 payload: false
               });
             }}
-            buttonTitle={"Je passe"}
-          />
+          >
+            Je passe
+          </Button>
         }
       </div>
-      <Alert
-        open={open}
-        win={state.player1Total === 21 || state.player1Total > state.dealerCards}
-        replay= {() => {
-          getNewDeck()
-          dispatch({
-            type: 'REINIT_ALL',
-            payload: initialState
-          })
-          handleClose()
-        }}
-      />
     </div>
   );
 }
